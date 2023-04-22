@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        .user-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Admin Dashboard</h1>
+    <div>
+        <% users.forEach(user=> { %>
+            <div class="user-row">
+                <div>
+                    <span>
+                        <%= user.firstName %>
+                            <%= user.lastName %>
+                    </span>
+                    <span>(<%= user.username %>)</span>
+                </div>
+                <label>
+                    <input type="checkbox" class="activation-toggle" data-user-id="<%= user._id %>" <%=user.isActive
+                        ? 'checked' : '' %>>
+                    Active
+                </label>
+            </div>
+            <% }) %>
+    </div>
+    <script>
+        document.querySelectorAll('.activation-toggle').forEach(toggle => {
+            toggle.addEventListener('change', async (event) => {
+                const userId = event.target.dataset.userId;
+                const isActive = event.target.checked;
+                const response = await fetch(`/admin/activate/${userId}?isActive=${isActive}`, { method: 'POST' });
+                if (response.status !== 200) {
+                    alert('Error updating user activation status');
+                    event.target.checked = !isActive;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

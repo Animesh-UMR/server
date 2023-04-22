@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Information</title>
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto);
+
+        body {
+            font-family: "Roboto", "Sans Serif";
+            font-size: 12pt;
+            color: #fff;
+            background: #f6483b;
+
+        }
+
+        #chartdiv {
+            width: 100%;
+            height: 700px;
+            max-width: 100%;
+        }
+
+        .wrapper {
+            margin: 10% auto;
+            width: auto;
+        }
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        label {
+
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #fff;
+            border-bottom: none;
+        }
+
+        label:hover {
+            background: #26C281;
+        }
+
+        label.last {
+            border-bottom: 1px solid #fff;
+        }
+
+        ul ul li {
+            padding: 10px;
+            /* background: #59ABE3; */
+        }
+
+
+        input[type="checkbox"] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        input[type="checkbox"]~ul {
+            height: 0;
+            transform: scaleY(0);
+        }
+
+        input[type="checkbox"]:checked~ul {
+            height: 100%;
+            transform-origin: top;
+            transition: transform .2s ease-out;
+            transform: scaleY(1);
+        }
+
+        input[type="checkbox"]:checked+label {
+            background: #26C281;
+            border-bottom: 1px solid #fff;
+        }
+
+
+        .header {
+            background-color: rgb(254, 178, 2);
+            color: white;
+            font-size: 2em;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .key {
+            font-weight: bold;
+            text-transform: capitalize;
+            font-size: 1.2em;
+        }
+
+        .value {
+            text-transform: capitalize;
+        }
+
+        .expand-btn {
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        #container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        .box {
+            width: 30%;
+        }
+
+        h1 {
+            font-size: 26px;
+        }
+
+        #defination {
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+
+        .tab button:hover {
+            background-color: #ddd;
+        }
+
+        .tab button.active {
+            background-color: #ccc;
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+    </style>
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/hierarchy.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+</head>
+
+<body>
+    <div class="header">
+        <h1>
+            <%= keyword %> Market Information - 2023
+        </h1>
+    </div>
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'MarketInfo')">Market Information</button>
+        <button class="tablinks" onclick="openTab(event, 'MarketMapping')">Market Mapping</button>
+        <button class="tablinks" onclick="openTab(event, 'DataTable')">Data Table</button>
+    </div>
+    <div id="MarketInfo" class="tabcontent">
+        <!-- Add your existing market information content here -->
+
+        <div id="defination">
+            <p>
+                <b>Defination :</b>
+                <%= defination %>
+            </p>
+        </div>
+
+
+        <div id="container">
+            <div id="tree" class="box">
+                <ul>
+                    <%- renderTree(isJSON(items) ? JSON.parse(items) : items) %>
+                </ul>
+            </div>
+            <div id="box2" class="box">
+                <ul>
+                    <%- renderTree(isJSON(keyplayer) ? JSON.parse(keyplayer) : keyplayer) %>
+                </ul>
+            </div>
+            <div id="box3" class="box">
+                <ul>
+                    <%- renderTree(isJSON(swot) ? JSON.parse(swot) : swot) %>
+                </ul>
+            </div>
+            <div id="box3" class="box">
+                <ul>
+                    <%- renderTree(isJSON(drot) ? JSON.parse(drot) : drot) %>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="MarketMapping" class="tabcontent">
+        <div id="chartdiv"></div>
+    </div>
+    <div id="DataTable" class="tabcontent">
+        <table id="dataTable"></table>
+    </div>
+    <textarea id="jsonData" style="display:none;"><%- (items) %></textarea>
+    <script>
+        function getJsonData() {
+            const jsonDataElement = document.getElementById('jsonData');
+            return JSON.parse(jsonDataElement.value);
+        }
+        function createDataTable() {
+            const jsonData = getJsonData();
+            const mainKey = Object.keys(jsonData)[0];
+            const mainValue = jsonData[mainKey];
+            const table = document.getElementById("dataTable");
+
+            // Create table header
+            const header = table.createTHead().insertRow(0);
+            header.insertCell(0).innerHTML = mainKey;
+            for (let year = 2016; year <= 2031; year++) {
+                header.insertCell(year - 2015).innerHTML = year;
+            }
+
+            // Create table rows
+            let rowIndex = 1;
+            for (const key in mainValue) {
+                if (mainValue.hasOwnProperty(key)) {
+                    const row = table.insertRow(rowIndex);
+                    row.insertCell(0).innerHTML = key;
+                    for (let year = 2016; year <= 2031; year++) {
+                        row.insertCell(year - 2015).innerHTML = "XX";
+                    }
+                    rowIndex++;
+                }
+            }
+        }
+
+        // Call the createDataTable function after the JSON data is loaded
+        createDataTable();
+    </script>
+
+    <script>
+        const jsonData = getJsonData();
+        function getAllKeys(obj) {
+            let keys = [];
+
+            for (const key in obj) {
+                keys.push(key);
+
+                if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
+                    keys = keys.concat(getAllKeys(obj[key]));
+                }
+            }
+
+            return keys;
+        }
+
+        const allKeys = getAllKeys(jsonData);
+
+        // Access main key value
+        const mainKey = Object.keys(jsonData)[0];
+        const mainValue = jsonData[mainKey];
+
+        // Loop through keys and values inside the main key
+        for (const key in mainValue) {
+            if (mainValue.hasOwnProperty(key)) {
+                const value = mainValue[key];
+                console.log(`Key: ${key}, Value: ${value}`);
+            }
+        }
+
+        function expandCollapse(event) {
+            const ul = event.target.nextSibling.nextSibling;
+            if (ul && ul.tagName === 'UL') {
+                ul.style.display = ul.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+    </script>
+
+
+
+
+    <% function formatKey(key) { return key.replace(/_/g, ' ' ); } function formatValue(value) {
+        value=value.toString().replace(/_/g, ' ' ); if (/^\d+:/g.test(value)) { value=value.replace(/^\d+:/g, '' ); }
+        return value.charAt(0).toUpperCase() + value.slice(1); } function isJSON(str) { try { JSON.parse(str); } catch
+        (e) { return false; } return true; } function renderTree(obj) { let output='' ; for (const key in obj) { const
+        value=obj[key]; output +='<li><span class="expand-btn" onclick="expandCollapse(event)">' + (typeof
+        value==='object' ? '+' : '' ) + '</span><span class="key">' + formatKey(key) + '</span>' ; if (typeof
+        value==='object' ) { output +='<ul style="display:none;">' + renderTree(value) + '</ul>' ; } else { output
+        +=' : <span class="value">' + formatValue(value) + '</span>' ; } output +='</li>' ; } return output; } %>
+        <!-- Chart code -->
+        <script>
+            am5.ready(function () {
+
+                // Create root element
+                var root = am5.Root.new("chartdiv");
+
+                // Set themes
+                root.setThemes([
+                    am5themes_Animated.new(root)
+                ]);
+
+                // Create wrapper container
+                var container = root.container.children.push(am5.Container.new(root, {
+                    width: am5.percent(100),
+                    height: am5.percent(100),
+                    layout: root.verticalLayout
+                }));
+
+                // Create series
+                var series = container.children.push(am5hierarchy.ForceDirected.new(root, {
+                    singleBranchOnly: false,
+                    downDepth: 1,
+                    initialDepth: 0,
+                    valueField: "value",
+                    categoryField: "name",
+                    childDataField: "children",
+                    minRadius: 40,
+                    maxRadius: am5.percent(10),
+                    nodePadding: 20,
+                    centerStrength: 1,
+                    manyBodyStrength: -30,
+                }));
+
+
+
+
+                // Generate and set data
+                var maxLevels = 2;
+                var maxNodes = 5;
+                var maxValue = 100;
+                var data = {
+                    name: '<%= keyword %>',
+                    children: []
+                };
+
+
+                // Function to convert text to camel case and replace underscores with spaces
+                function toCamelCase(str) {
+                    return str
+                        .replace(/_+/g, ' ')
+                        .replace(/(?:^\w|[A-Z]|\b\w)/g, function (word, index) {
+                            return index === 0 ? word.toUpperCase() : word.toLowerCase();
+                        })
+                        .replace(/\s+/g, ' ');
+                }
+
+                // Modify the data object
+                for (const key in mainValue) {
+                    if (mainValue.hasOwnProperty(key)) {
+                        const value = mainValue[key];
+                        const child = {
+                            name: toCamelCase(key),
+                            children: value.map(item => ({ name: toCamelCase(item) })),
+                            value: 40,
+                        };
+                        data.children.push(child);
+                    }
+                }
+
+                // Assign the modified data object to the amCharts ForceDirected graph
+                series.data.setAll([data]);
+                series.set("selectedDataItem", series.dataItems[0], series.minRadius);
+
+
+
+
+            }); // end am5.ready()
+        </script>
+
+        <!-- HTML -->
+
+        <script>
+            function openTab(evt, tabName) {
+                var i, tabcontent, tablinks;
+                tabcontent = document.getElementsByClassName("tabcontent");
+                for (i = 0; i < tabcontent.length; i++) {
+                    tabcontent[i].style.display = "none";
+                }
+                tablinks = document.getElementsByClassName("tablinks");
+                for (i = 0; i < tablinks.length; i++) {
+                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                }
+                document.getElementById(tabName).style.display = "block";
+                evt.currentTarget.className += " active";
+            }
+
+            // Get the element with id="defaultOpen" and click on it
+            document.getElementsByClassName("tablinks")[0].click();
+        </script>
+
+</body>
+
+</html>

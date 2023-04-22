@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wound Care Market</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: black;
+        }
+
+        .node {
+            cursor: pointer;
+            stroke-width: 1.5px;
+        }
+
+        .node.parent {
+            fill: #065382;
+            stroke: #1A5276;
+        }
+
+        .node.child {
+            fill: #F39C12;
+            stroke: #F39C12;
+        }
+
+        text {
+            font: 20px sans-serif;
+            pointer-events: none;
+            text-anchor: middle;
+            fill: white;
+        }
+
+        .link {
+            fill: none;
+            stroke: white;
+            stroke-width: 1.5px;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script>
+        // Replace the following data with your own data
+        const data = {
+            id: 0,
+            parent_market: "<%= obj.parent_market %>",
+            child_markets: [
+                <% obj.child_markets.forEach(function (child_market, index) { %>
+                {
+                    id: <%= index + 1 %>,
+                child_market: "<%= child_market.child_market %>",
+                    CAGR_value: "<%= child_market.CAGR_value %>",
+                        hidden: true,
+                            distance: <%= 150 + Math.random() * 150 %>
+            },
+                <% }); %>
+            ],
+        };
+
+        const svg = d3.select("body")
+            .append("svg")
+            .attr("width", window.innerWidth)
+            .attr("height", window.innerHeight);
+
+        const g = svg.append("g");
+
+        const simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(d => d.id).distance(d => d.target.data.distance))
+            .force("charge", d3.forceManyBody().strength(-800))
+            .force("center", d3.forceCenter(window.innerWidth / 2, window.innerHeight / 2));
+
+        const root = d3.hierarchy(data, d => d.child_markets);
+        const nodes = root.descendants();
+        const links = root.links();
+
+        const link = g.selectAll(".link")
+            .data(links)
+            .join("line")
+            .attr("class", "link")
+            .attr("opacity", 0);
+
+        const node = g.selectAll(".node")
+            .data(nodes)
+            .join("g")
+            .attr("class", d => d.data === data ? "node parent" : "node child")
+            .style("opacity", d => (d.data.hidden ? 0 : 1))
+            .on("click", function (event, d) {
+                if (d.data === data) {
+                    d.children.forEach(child => {
+                        child.data.hidden = !child.data.hidden;
+                        d3.select(`#node-${child.data.id}`)
+                            .transition()
+                            .duration(1000)
+                            .style("opacity", child.data.hidden ? 0 : 1);
+                        d3.select(`#link-${child.data.id}`)
+                            .transition()
+                            .duration(1000)
+                            .attr("opacity", child.data.hidden ? 0 : 1);
+                    });
+                }
+            })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        node.append("circle")
+            .attr("r", 20);
+
+        node.append("text")
+            .attr("dy", "-2.0em")
+            .text(d => d.data === data ? d.data.parent_market : `${d.data.child_market} (${d.data.CAGR_value})`);
+
+        node.attr("id", d => `node-${d.data.id}`);
+        link.attr("id", d => `link-${d.target.data.id}`);
+
+        simulation.nodes(nodes)
+            .on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node
+                    .attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+
+        simulation.force("link")
+            .links(links);
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+    </script>
+</body>
+
+</html>

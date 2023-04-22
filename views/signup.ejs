@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Header */
+        header {
+            background-color: #fff;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Form */
+        form {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            margin: 2rem auto;
+            max-width: 30rem;
+            padding: 2rem;
+        }
+
+        form h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        form label {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="password"] {
+            border: none;
+            border-radius: 0.25rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            width: 100%;
+        }
+
+        form button[type="submit"] {
+            background-color: #333;
+            border: none;
+            border-radius: 0.25rem;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.2s ease-in-out;
+            width: 100%;
+        }
+
+        form button[type="submit"]:hover {
+            background-color: #555;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #fff;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        footer p {
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        footer a {
+            color: #333;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+        footer a:hover {
+            color: #555;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            form {
+                margin: 2rem 1rem;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Sign Up</h1>
+    </header>
+    <form action="/signup" method="post">
+        <h2>Create an Account</h2>
+        <div>
+            <label for="firstName">First Name:</label>
+            <input type="text" name="firstName" id="firstName" required>
+        </div>
+        <div>
+            <label for="lastName">Last Name:</label>
+            <input type="text" name="lastName" id="lastName" required>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" required>
+        </div>
+        <div>
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="text" name="phoneNumber" id="phoneNumber" required>
+        </div>
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+        <button type="submit">Sign Up</button>
+    </form>
+    <footer>
+        <p>Already have an account? <a href="/login">Log in</a></p>
+    </footer>
+</body>
+
+</html>
