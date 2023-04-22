@@ -2,6 +2,7 @@ const { Configuration, OpenAIApi } = require("openai");
 const express = require('express');
 const app = express();
 const router = express.Router();
+require('dotenv').config();
 
 router.get('/getinfo', (req, res) => {
     res.sendFile(__dirname + '/index.html');
@@ -11,7 +12,7 @@ router.post('/getinfo', (req, res) => {
     var keyword = req.body.keyword;
     async function callopenai() {
         const configuration = new Configuration({
-            apiKey: "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",
+            apiKey: process.env.OPENAI_API_KEY,
         });
         const openai = new OpenAIApi(configuration);
 

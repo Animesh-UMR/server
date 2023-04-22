@@ -4,6 +4,7 @@ const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const app = express();
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
@@ -75,7 +76,7 @@ router.post('/', async (req, res) => {
 
     async function callopenai() {
         const configuration = new Configuration({
-            apiKey: "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",
+            apiKey: process.env.OPENAI_API_KEY,
         });
         const openai = new OpenAIApi(configuration);
         const completion = await openai.createChatCompletion({

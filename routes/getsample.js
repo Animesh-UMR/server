@@ -6,6 +6,8 @@ const app = express();
 const fs = require('fs');
 const officegen = require('officegen');
 const JSZip = require('jszip');
+require('dotenv').config();
+
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
@@ -72,7 +74,7 @@ router.post('/', (req, res) => {
 
     async function callopenai() {
         const configuration = new Configuration({
-            apiKey: "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",
+            apiKey: process.env.OPENAI_API_KEY,
         });
         const openai = new OpenAIApi(configuration);
 
