@@ -138,4 +138,6 @@ app.use('/getsegments', isLoggedIn, isUserActive, getsegmentsRouter);
 app.use('/getparentmarket', getparentmarketRouter);
 app.use('/generaterd', generaterd);
 
-app.listen(port, () => console.log(`Node Server Running On Port ${port}!`));
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Node Server Running On Port ${port}!`);
+});
