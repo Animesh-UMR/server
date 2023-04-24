@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.set("view engine", "ejs");
-mongoose.connect('mongodb+srv://animesh:RtnlAkI8pcSXdedj@cluster0.iiaaxkj.mongodb.net/mrdb', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Passport.js configuration
 passport.use(
@@ -74,7 +74,7 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', passport.authenticate('local', {
-    successRedirect: '/getsegments',
+    successRedirect: '/dashboard',
     failureRedirect: '/login',
     failureFlash: true
 }));
@@ -105,7 +105,11 @@ function isUserActive(req, res, next) {
     res.redirect('/login');
 }
 
-app.get('/', (req, res) => res.send('Hello World!'));
+app.get('/', (req, res) => res.render('login', { messages: req.flash() }));
+
+app.get('/dashboard', isLoggedIn, isUserActive, (req, res) => {
+    res.render('dashboard');
+});
 
 app.get('/reports', async (req, res) => {
     // const reports = await ReportModel.find({});
