@@ -13,7 +13,6 @@
             font-size: 12pt;
             color: #fff;
             background: #f6483b;
-
         }
 
         #chartdiv {
@@ -34,7 +33,6 @@
         }
 
         label {
-
             cursor: pointer;
             padding: 10px;
             border: 1px solid #fff;
@@ -53,7 +51,6 @@
             padding: 10px;
             /* background: #59ABE3; */
         }
-
 
         input[type="checkbox"] {
             position: absolute;
@@ -76,7 +73,6 @@
             background: #26C281;
             border-bottom: 1px solid #fff;
         }
-
 
         .header {
             background-color: rgb(254, 178, 2);
@@ -167,8 +163,8 @@
     </div>
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'MarketInfo')">Market Information</button>
-        <button class="tablinks" onclick="openTab(event, 'MarketMapping')">Market Mapping</button>
-        <button class="tablinks" onclick="openTab(event, 'DataTable')">Data Table</button>
+        <!-- <button class="tablinks" onclick="openTab(event, 'MarketMapping')">Market Mapping</button>
+        <button class="tablinks" onclick="openTab(event, 'DataTable')">Data Table</button> -->
     </div>
     <div id="MarketInfo" class="tabcontent">
         <!-- Add your existing market information content here -->
@@ -223,14 +219,12 @@
             const mainKey = Object.keys(jsonData)[0];
             const mainValue = jsonData[mainKey];
             const table = document.getElementById("dataTable");
-
             // Create table header
             const header = table.createTHead().insertRow(0);
             header.insertCell(0).innerHTML = mainKey;
             for (let year = 2016; year <= 2031; year++) {
                 header.insertCell(year - 2015).innerHTML = year;
             }
-
             // Create table rows
             let rowIndex = 1;
             for (const key in mainValue) {
@@ -244,7 +238,6 @@
                 }
             }
         }
-
         // Call the createDataTable function after the JSON data is loaded
         createDataTable();
     </script>
@@ -253,24 +246,18 @@
         const jsonData = getJsonData();
         function getAllKeys(obj) {
             let keys = [];
-
             for (const key in obj) {
                 keys.push(key);
-
                 if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
                     keys = keys.concat(getAllKeys(obj[key]));
                 }
             }
-
             return keys;
         }
-
         const allKeys = getAllKeys(jsonData);
-
         // Access main key value
         const mainKey = Object.keys(jsonData)[0];
         const mainValue = jsonData[mainKey];
-
         // Loop through keys and values inside the main key
         for (const key in mainValue) {
             if (mainValue.hasOwnProperty(key)) {
@@ -278,7 +265,6 @@
                 console.log(`Key: ${key}, Value: ${value}`);
             }
         }
-
         function expandCollapse(event) {
             const ul = event.target.nextSibling.nextSibling;
             if (ul && ul.tagName === 'UL') {
@@ -301,22 +287,18 @@
         <!-- Chart code -->
         <script>
             am5.ready(function () {
-
                 // Create root element
                 var root = am5.Root.new("chartdiv");
-
                 // Set themes
                 root.setThemes([
                     am5themes_Animated.new(root)
                 ]);
-
                 // Create wrapper container
                 var container = root.container.children.push(am5.Container.new(root, {
                     width: am5.percent(100),
                     height: am5.percent(100),
                     layout: root.verticalLayout
                 }));
-
                 // Create series
                 var series = container.children.push(am5hierarchy.ForceDirected.new(root, {
                     singleBranchOnly: false,
@@ -331,10 +313,6 @@
                     centerStrength: 1,
                     manyBodyStrength: -30,
                 }));
-
-
-
-
                 // Generate and set data
                 var maxLevels = 2;
                 var maxNodes = 5;
@@ -343,8 +321,6 @@
                     name: '<%= keyword %>',
                     children: []
                 };
-
-
                 // Function to convert text to camel case and replace underscores with spaces
                 function toCamelCase(str) {
                     return str
@@ -354,7 +330,6 @@
                         })
                         .replace(/\s+/g, ' ');
                 }
-
                 // Modify the data object
                 for (const key in mainValue) {
                     if (mainValue.hasOwnProperty(key)) {
@@ -367,14 +342,9 @@
                         data.children.push(child);
                     }
                 }
-
                 // Assign the modified data object to the amCharts ForceDirected graph
                 series.data.setAll([data]);
                 series.set("selectedDataItem", series.dataItems[0], series.minRadius);
-
-
-
-
             }); // end am5.ready()
         </script>
 
@@ -394,7 +364,6 @@
                 document.getElementById(tabName).style.display = "block";
                 evt.currentTarget.className += " active";
             }
-
             // Get the element with id="defaultOpen" and click on it
             document.getElementsByClassName("tablinks")[0].click();
         </script>

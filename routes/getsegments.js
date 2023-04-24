@@ -94,7 +94,7 @@ router.post('/', async (req, res) => {
             model: "gpt-4",
             messages: [
                 { role: "system", content: "You are an ai researcher. Give output in JSON format. Never mention that you are an ai model. Use _ in key name if there are more than one word." },
-                { role: "user", content: "Give output in JSON format. Give all the Major Player in " + keyword + "market as per your knowledge. Use Key_Player keyword as top level object. Only give name of the key player no other information." },
+                { role: "user", content: "Give output in JSON format. Give all the Major Player (10-20) in " + keyword + "market as per your knowledge. Use Key_Player keyword as top level object. Only give name of the key player no other information." },
             ],
         });
 
@@ -104,7 +104,7 @@ router.post('/', async (req, res) => {
             model: "gpt-4",
             messages: [
                 { role: "system", content: "You are an ai researcher. Give output in JSON format. Never mention that you are an ai model. Use _ in key name if there are more than one word." },
-                { role: "user", content: "Give output in JSON format. Give SWOT analysis on " + keyword + " market as per your knowledge. In this specific JSON format, each category of the SWOT analysis is represented by a key-value pair. The keys are the category names (Strengths, Weaknesses, Opportunities, and Threats), and the values are arrays that will contain the respective points for each category." },
+                { role: "user", content: "Give output in JSON format. Give SWOT analysis on " + keyword + " market as per your knowledge. In this specific JSON format, each category of the SWOT analysis is represented by a key-value pair. The keys are the category names (Strengths, Weaknesses, Opportunities, and Threats), and the values are arrays that will contain the respective points (20-30 words) for each category." },
             ],
         });
 
